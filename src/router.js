@@ -23,6 +23,7 @@ export default new Router({
       name:'Main',
       zh_name:'主界面',
       component:Main,
+      redirect:'/main/news',
       children:[
         {
           path:'/main/news',
