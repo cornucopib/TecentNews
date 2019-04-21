@@ -7,7 +7,7 @@
 
       <div class="news-header-search">
         <img src="@/assets/images/search_icon.png" alt>
-        <div>你好！世界</div>
+        <div>你好！世界你好！世界你好！世界你好！世界你好！世界你好！世界你好！世界你好！世界你好！世界</div>
       </div>
 
       <div class="news-header-right-button">
@@ -91,7 +91,7 @@ header {
   border-radius: 5px;
   display: flex;
   align-items: center;
-  width: calc(100% - 100px);
+  width: calc(100% - 80px);
 }
 .news-header-search img {
   width: 15px;
