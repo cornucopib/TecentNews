@@ -1,6 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
+import Main from '@/app/main/Main'
+import News from '@/app/main/news/News'
+import Video from '@/app/main/video/Video'
+import Hot from '@/app/main/hot/Hot'
+import Me from '@/app/main/me/Me'
 
 Vue.use(Router)
 
@@ -9,17 +13,42 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: Home
+      path:'/',
+      name:'App',
+      zh_name:'入口',
+      redirect:'/main'
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      path:'/main',
+      name:'Main',
+      zh_name:'主界面',
+      component:Main,
+      children:[
+        {
+          path:'/main/news',
+          name:'News',
+          zh_name:'新闻',
+          component:News
+        },
+        {
+          path:'/main/video',
+          name:'Video',
+          zh_name:'视频',
+          component:Video
+        },
+        {
+          path:'/main/hot',
+          name:'hot',
+          zh_name:'热推',
+          component:Hot
+        },
+        {
+          path:'/main/me',
+          name:'Me',
+          zh_name:'我',
+          component:Me
+        }
+      ]
     }
   ]
 })
