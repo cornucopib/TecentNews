@@ -1,6 +1,6 @@
 <template>
   <div
-    class="md-scroll-view"
+    class="gt-scroll-view"
     @touchstart="$_onScollerTouchStart"
     @touchmove="$_onScollerTouchMove"
     @touchend="$_onScollerTouchEnd"
@@ -64,7 +64,7 @@ import Scroller from '../_util/scroller'
 import { render } from '../_util/render'
 
 export default {
-  name: 'md-scroll-view',
+  name: 'gt-scroll-view',
   props: {
     scrollingX: {
       type: Boolean,
@@ -425,7 +425,7 @@ export default {
 </script>
 
 <style lang="stylus">
-.md-scroll-view {
+.gt-scroll-view {
   position: relative;
   display: block;
   height: 100%;

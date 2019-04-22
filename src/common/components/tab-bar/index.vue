@@ -1,20 +1,20 @@
 <template>
-  <nav class="md-tab-bar">
+  <nav class="gt-tab-bar">
     <div
-      class="md-tab-bar-inner"
+      class="gt-tab-bar-inner"
       ref="wrapper"
     >
       <template v-if="scrollable">
         <div
-          class="md-tab-bar-start"
+          class="gt-tab-bar-start"
           v-show="maskStartShown"
         ></div>
         <div
-          class="md-tab-bar-end"
+          class="gt-tab-bar-end"
           v-show="maskEndShown"
         ></div>
       </template>
-      <md-scroll-view
+      <gt-scroll-view
         ref="scroller"
         :scrolling-x="scrollable"
         :scrolling-y="false"
@@ -22,11 +22,11 @@
         @scroll="$_onScroll"
       >
         <div
-          class="md-tab-bar-list"
+          class="gt-tab-bar-list"
           :style="{width: contentW + 'px'}"
         >
           <a
-            class="md-tab-bar-item"
+            class="gt-tab-bar-item"
             :class="{
               'is-active': currentName === item.name,
               'is-disabled': !!item.disabled
@@ -46,7 +46,7 @@
           </a>
         </div>
         <span
-          class="md-tab-bar-ink"
+          class="gt-tab-bar-ink"
           :class="{
             'is-disabled': currentTab && currentTab.disabled
           }"
@@ -56,16 +56,16 @@
             transform: 'translateX(' + inkPos + 'px)',
           }"
         ></span>
-      </md-scroll-view>
+      </gt-scroll-view>
     </div>
   </nav>
 </template>
 
 <script>
-import ScrollView from '@/common/components/scroll-view/index'
+import ScrollView from 'components/scroll-view/index'
 
 export default {
-  name: 'md-tab-bar',
+  name: 'gt-tab-bar',
 
   components: {
     [ScrollView.name]: ScrollView,
@@ -242,28 +242,28 @@ export default {
 </script>
 
 <style lang="stylus">
-@import '~common/components/_style/mixin/theme.components.styl';
+@import '~style/mixin/theme.components.styl';
 
-.md-tab-bar {
+.gt-tab-bar {
   position: relative;
   padding-left: tab-offset;
   padding-right: tab-offset;
   background-color: tab-bg;
 }
 
-.md-tab-bar-inner {
+.gt-tab-bar-inner {
   position: relative;
   width: 100%;
   // line-height 0
 }
 
-.md-tab-bar-list {
+.gt-tab-bar-list {
   display: flex;
   justify-content: space-between;
   min-width: 100%;
 }
 
-.md-tab-bar-item {
+.gt-tab-bar-item {
   flex-shrink: 0;
   position: relative;
   display: inline-flex;
@@ -286,7 +286,7 @@ export default {
   }
 }
 
-.md-tab-bar-ink {
+.gt-tab-bar-ink {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -300,7 +300,7 @@ export default {
   }
 }
 
-.md-tab-bar-start, .md-tab-bar-end {
+.gt-tab-bar-start, .gt-tab-bar-end {
   position: absolute;
   top: 0;
   left: 0;
@@ -329,14 +329,14 @@ export default {
   }
 }
 
-.md-tab-bar-end {
+.gt-tab-bar-end {
   left: auto;
   right: 0;
   transform: rotate(180deg);
 }
 
-.md-tab-bar {
-  .md-scroll-view {
+.gt-tab-bar {
+  .gt-scroll-view {
     display: block;
   }
 

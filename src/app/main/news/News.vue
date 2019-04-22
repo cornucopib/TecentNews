@@ -7,51 +7,94 @@
 
       <div class="news-header-search">
         <img src="@/assets/images/search_icon.png" alt>
-        <div>你好！世界你好！世界你好！世界你好！世界你好！世界你好！世界你好！世界你好！世界你好！世界</div>
+        <div>你好！世界你好！</div>
       </div>
 
       <div class="news-header-right-button">
         <img src="@/assets/images/headphone.png" alt>
       </div>
     </header>
-    <md-tab-bar v-model="current" :items="items" :maxLength="5"/>
+    <nav>
+      <gt-tab-bar v-model="current" :items="items" :maxLength="5" @change="onTabChange"/>
+    </nav>
+
+    <gt-swiper
+      ref="swiper"
+      :autoplay="0"
+      :is-prevent="false"
+      :is-loop="false"
+      :has-dots="false"
+      @before-change="onSwiperChange"
+    >
+      <gt-swiper-item v-for="(item,index) in items" :key="index">
+        <div class="content-item">{{ item.label }}</div>
+      </gt-swiper-item>
+    </gt-swiper>
   </div>
 </template>
 
 <script>
-import TabBar from "@/common/components/tab-bar/index";
+import TabBar from "components/tab-bar/index";
+import Swiper from "components/swiper/index";
+import SwiperItem from "components/swiper/swiper-item";
 
 export default {
   components: {
-    [TabBar.name]: TabBar
+    [TabBar.name]: TabBar,
+    [Swiper.name]: Swiper,
+    [SwiperItem.name]: SwiperItem
   },
-  data(){
+  data() {
     return {
-      current:1,
-      items:[
+      current: 1,
+      items: [
         {
-          name: 1, label: "要闻"
-        }, {
-          name: 2, label: "数码"
-        }, {
-          name: 3, label: "视频"
-        }, {
-          name: 4, label: "推荐"
-        }, {
-          name: 5, label: "深圳"
-        }, {
-          name: 6, label: "娱乐"
+          name: 1,
+          label: "要闻"
         },
         {
-          name: 7, label: "股票"
+          name: 2,
+          label: "数码"
         },
         {
-          name: 8, label:"体育"
+          name: 3,
+          label: "视频"
         },
         {
-          name: 9, label: "游戏"
+          name: 4,
+          label: "推荐"
+        },
+        {
+          name: 5,
+          label: "深圳"
+        },
+        {
+          name: 6,
+          label: "娱乐"
+        },
+        {
+          name: 7,
+          label: "股票"
+        },
+        {
+          name: 8,
+          label: "体育"
+        },
+        {
+          name: 9,
+          label: "游戏"
         }
       ]
+    };
+  },
+
+  methods: {
+    onSwiperChange(from, to) {
+      console.log(to);
+      this.current = to + 1;
+    },
+    onTabChange(item, index) {
+      this.$refs.swiper.goto(index);
     }
   }
 };
@@ -61,6 +104,8 @@ export default {
 .news {
   padding: 0;
   margin: 0;
+  width: 100%;
+  height: 100%;
 }
 
 header {
@@ -120,5 +165,11 @@ header {
   width: 24px;
   height: 24px;
   margin: 8px auto;
+}
+
+.content-item {
+  width: 100%;
+  height: 100%;
+  text-align: center;
 }
 </style>

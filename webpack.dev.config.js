@@ -6,7 +6,8 @@ const webpackConfig={
     resolve:{
         alias:{
             '@':resolve('src'),
-            'common':resolve('/src/common')
+            components:resolve('src/common/components'),
+            style:resolve('src/common/components/_style')
         }
     },
     devtool: 'source-map'

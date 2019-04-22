@@ -1,10 +1,10 @@
 <template>
-  <div class="md-scroll-view-refresh">
-    <!-- <md-activity-indicator-rolling
+  <div class="gt-scroll-view-refresh">
+    <!-- <gt-activity-indicator-rolling
       :process="!isRefreshing ? process : undefined"
       :width="10"
       :color="rollerColor"
-    ></md-activity-indicator-rolling>
+    ></gt-activity-indicator-rolling>
     <p class="refresh-tip">{{ refreshTip }}</p> -->
     <esales-pull-refresh-animation
       :isRefreshing="isRefreshing"
@@ -17,11 +17,11 @@
 
 <script>
 // import Roller from '../activity-indicator/roller'
-import PullRreshAnimation from '@/common/components/activity-indicator/loading_down'
+import PullRreshAnimation from 'components/activity-indicator/loading_down'
 
 
 export default {
-  name: 'md-scroll-view-refresh',
+  name: 'gt-scroll-view-refresh',
 
   components: {
     [PullRreshAnimation.name]: PullRreshAnimation,
@@ -90,15 +90,15 @@ export default {
 </script>
 
 <style lang="stylus">
-.md-scroll-view-refresh {
+.gt-scroll-view-refresh {
   display: flex;
   padding: 20px 0;
   justify-content: center;
   align-items: center;
   overflow: hidden;
 
-  .md-activity-indicator-rolling {
-    .md-activity-indicator-svg {
+  .gt-activity-indicator-rolling {
+    .gt-activity-indicator-svg {
       width: 32px !important;
       height: 32px !important;
       transform: rotateZ(-45deg);
