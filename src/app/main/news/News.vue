@@ -27,7 +27,9 @@
       @before-change="onSwiperChange"
     >
       <gt-swiper-item v-for="(item,index) in items" :key="index">
-        <div class="content-item">{{ item.label }}</div>
+        <div class="content-item">
+          <component v-bind:is="tabsComponent[index]" :title="item.label"></component>
+        </div>
       </gt-swiper-item>
     </gt-swiper>
   </div>
@@ -42,7 +44,9 @@ export default {
   components: {
     [TabBar.name]: TabBar,
     [Swiper.name]: Swiper,
-    [SwiperItem.name]: SwiperItem
+    [SwiperItem.name]: SwiperItem,
+    ImportantNews: () => import("./ImportantNews"),
+    Default: () => import("./Default")
   },
   data() {
     return {
@@ -84,6 +88,17 @@ export default {
           name: 9,
           label: "游戏"
         }
+      ],
+      tabsComponent: [
+        "ImportantNews",
+        "Default",
+        "Default",
+        "Default",
+        "Default",
+        "Default",
+        "Default",
+        "Default",
+        "Default"
       ]
     };
   },
@@ -169,7 +184,9 @@ header {
 
 .content-item {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 130px);
   text-align: center;
+  overflow: auto;
+  padding-right: 17px;
 }
 </style>

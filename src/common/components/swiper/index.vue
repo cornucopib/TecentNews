@@ -33,16 +33,16 @@
 </template>
 
 <script>
-import Scroller from '../_util/scroller'
-import { render } from '../_util/render'
-import { warn, debounce } from '../_util'
+import Scroller from "../_util/scroller";
+import { render } from "../_util/render";
+import { warn, debounce } from "../_util";
 
 // scale of sliding distance & touch duration that triggers page turning
-const PAGING_SCALE = 0.5
-const PAGING_DURATION = 300
+const PAGING_SCALE = 0.5;
+const PAGING_DURATION = 300;
 
 export default {
-  name: 'gt-swiper',
+  name: "gt-swiper",
 
   // components: {
   // },
@@ -51,52 +51,56 @@ export default {
     autoplay: {
       type: Number,
       default: 3000,
-      validator: function (value) {
+      validator: function(value) {
         if (value === 0) {
-          return true
+          return true;
         }
-        return value >= 500
-      },
+        return value >= 500;
+      }
     },
     transition: {
       type: String,
-      default: 'slide',
-      validator: function (value) {
-        return ['slide', 'slideY', 'fade'].indexOf(value) > -1
-      },
+      default: "slide",
+      validator: function(value) {
+        return ["slide", "slideY", "fade"].indexOf(value) > -1;
+      }
     },
     transitionDuration: {
       type: Number,
-      default: 250,
+      default: 250
     },
     defaultIndex: {
       // display index
       type: Number,
       default: 0,
-      validator: function (value) {
-        return value > -1
-      },
+      validator: function(value) {
+        return value > -1;
+      }
     },
     hasDots: {
       type: Boolean,
-      default: true,
+      default: true
     },
     isPrevent: {
       type: Boolean,
-      default: true,
+      default: true
+    },
+    isStop: {
+      type: Boolean,
+      default: true
     },
     isLoop: {
       type: Boolean,
-      default: true,
+      default: true
     },
     dragable: {
       type: Boolean,
-      default: true,
+      default: true
     },
     useNativeDriver: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
 
   data() {
@@ -119,26 +123,26 @@ export default {
       scroller: null,
       isStoped: false,
       $swiper: null,
-      transitionEndHandler: null,
-    }
+      transitionEndHandler: null
+    };
   },
 
   computed: {
     isLastItem() {
-      return this.index === this.rItemCount - 1
+      return this.index === this.rItemCount - 1;
     },
     isFirstItem() {
-      return this.index === 0
+      return this.index === 0;
     },
     realIndex() {
-      return this.getIndex()
+      return this.getIndex();
     },
     isSlide() {
-      return this.transition.toLowerCase().indexOf('slide') > -1
+      return this.transition.toLowerCase().indexOf("slide") > -1;
     },
     isVertical() {
-      return this.transition === 'slideY'
-    },
+      return this.transition === "slideY";
+    }
   },
 
   // LiftCircle Hook
@@ -148,14 +152,14 @@ export default {
   beforeMount
   */
   mounted() {
-    this.ready = true
-    this.$swiper = this.$el.querySelector('.gt-swiper-container')
-    this.$swiperBox = this.$el.querySelector('.gt-swiper-box')
+    this.ready = true;
+    this.$swiper = this.$el.querySelector(".gt-swiper-container");
+    this.$swiperBox = this.$el.querySelector(".gt-swiper-box");
     this.$nextTick(() => {
-      this.$_reInitItems()
-      this.$_startPlay()
-      window.addEventListener('resize', this.$_resize)
-    })
+      this.$_reInitItems();
+      this.$_startPlay();
+      window.addEventListener("resize", this.$_resize);
+    });
   },
   /*
   beforeUpdate
@@ -165,11 +169,11 @@ export default {
   beforeDestroy
   */
   destroyed() {
-    this.ready = false
-    this.$_clearTimer()
-    window.removeEventListener('resize', this.$_resize)
+    this.ready = false;
+    this.$_clearTimer();
+    window.removeEventListener("resize", this.$_resize);
     if (this.__resizeTimeout__) {
-      clearTimeout(this.__resizeTimeout__)
+      clearTimeout(this.__resizeTimeout__);
     }
   },
   /*
@@ -181,58 +185,69 @@ export default {
     $_resize() {
       // 防止屏幕翻转时，容器的尺寸更改不及时导致异常
       if (this.__resizeTimeout__) {
-        clearTimeout(this.__resizeTimeout__)
+        clearTimeout(this.__resizeTimeout__);
       }
       this.__resizeTimeout__ = setTimeout(() => {
-        this.$_reInitItems()
-      }, 300)
+        this.$_reInitItems();
+      }, 300);
     },
     $_onDragStart(e) {
       /**
        * Consume unfinished transition handler first
        * Otherwise the offset calculation will be abnormal
        */
-      this.transitionEndHandler && this.transitionEndHandler()
+      this.transitionEndHandler && this.transitionEndHandler();
 
       if (this.isPrevent) {
-        e.preventDefault()
+        e.preventDefault();
       }
-      this.dragging = true
-      this.userScrolling = false
-      this.$_doOnTouchStart(e)
+      if (this.isStop) {
+        e.stopPropagation();
+      }
+      this.dragging = true;
+      this.userScrolling = false;
+      this.$_doOnTouchStart(e);
     },
     $_onDragMove(e) {
       if (this.isPrevent) {
-        e.preventDefault()
+        e.spreventDefault();
+      }
+      if (this.isStop) {
+        e.stopPropagation();
       }
       if (!this.dragging) {
-        return
+        return;
       }
-      this.$_doOnTouchMove(e)
+      this.$_doOnTouchMove(e);
     },
     $_onDragEnd(e) {
       if (this.isPrevent) {
-        e.preventDefault()
+        e.preventDefault();
+      }
+      if (this.isStop) {
+        e.stopPropagation();
       }
       if (this.userScrolling) {
-        this.dragging = false
-        this.dragState = {}
-        return
+        this.dragging = false;
+        this.dragState = {};
+        return;
       }
       if (!this.dragging) {
-        return
+        return;
       }
-      this.$_doOnTouchEnd(e)
-      this.dragging = false
+      this.$_doOnTouchEnd(e);
+      this.dragging = false;
     },
     $_getDimension() {
-      this.dimension = this.isVertical ? this.$el.clientHeight : this.$el.clientWidth
+      this.dimension = this.isVertical
+        ? this.$el.clientHeight
+        : this.$el.clientWidth;
     },
 
     $_initScroller() {
       const scroller = new Scroller(
         (left, top) => {
-          render(this.$swiper, left, top, 1, this.useNativeDriver)
+          render(this.$swiper, left, top, 1, this.useNativeDriver);
         },
         {
           scrollingY: this.isVertical,
@@ -242,448 +257,483 @@ export default {
           animationDuration: this.transitionDuration,
           // paging: true,
           scrollingComplete: () => {
-            this.transitionEndHandler && this.transitionEndHandler()
-          },
-        },
-      )
+            this.transitionEndHandler && this.transitionEndHandler();
+          }
+        }
+      );
 
-      const container = this.$swiperBox
-      const contentWidth = this.isVertical ? container.clientWidth : container.clientWidth * this.rItemCount
-      const contentHeight = this.isVertical ? container.clientHeight * this.rItemCount : container.clientHeight
-      scroller.setPosition(container.clientLeft, container.clientTop)
-      scroller.setDimensions(container.clientWidth, container.clientHeight, contentWidth, contentHeight)
+      const container = this.$swiperBox;
+      const contentWidth = this.isVertical
+        ? container.clientWidth
+        : container.clientWidth * this.rItemCount;
+      const contentHeight = this.isVertical
+        ? container.clientHeight * this.rItemCount
+        : container.clientHeight;
+      scroller.setPosition(container.clientLeft, container.clientTop);
+      scroller.setDimensions(
+        container.clientWidth,
+        container.clientHeight,
+        contentWidth,
+        contentHeight
+      );
 
-      this.scroller = scroller
+      this.scroller = scroller;
     },
 
     $_backupItem(children) {
-      const firstNode = children[0].$el.cloneNode(true)
-      const lastNode = children[children.length - 1].$el.cloneNode(true)
+      const firstNode = children[0].$el.cloneNode(true);
+      const lastNode = children[children.length - 1].$el.cloneNode(true);
 
       if (children.length > 1 && this.isLoop) {
-        const firstNodeCopy = this.$swiper.querySelector('.gt-swiper-item-first-copy')
-        const lastNodeCopy = this.$swiper.querySelector('.gt-swiper-item-last-copy')
-        firstNodeCopy && this.$swiper.removeChild(firstNodeCopy)
-        lastNodeCopy && this.$swiper.removeChild(lastNodeCopy)
+        const firstNodeCopy = this.$swiper.querySelector(
+          ".gt-swiper-item-first-copy"
+        );
+        const lastNodeCopy = this.$swiper.querySelector(
+          ".gt-swiper-item-last-copy"
+        );
+        firstNodeCopy && this.$swiper.removeChild(firstNodeCopy);
+        lastNodeCopy && this.$swiper.removeChild(lastNodeCopy);
 
-        firstNode.className += ' gt-swiper-item-first-copy'
-        lastNode.className += ' gt-swiper-item-last-copy'
+        firstNode.className += " gt-swiper-item-first-copy";
+        lastNode.className += " gt-swiper-item-last-copy";
         if (this.isVertical) {
-          firstNode.style.height = `${this.dimension}px`
-          lastNode.style.height = `${this.dimension}px`
+          firstNode.style.height = `${this.dimension}px`;
+          lastNode.style.height = `${this.dimension}px`;
         } else {
-          firstNode.style.width = `${this.dimension}px`
-          lastNode.style.width = `${this.dimension}px`
+          firstNode.style.width = `${this.dimension}px`;
+          lastNode.style.width = `${this.dimension}px`;
         }
-        this.$swiper.appendChild(firstNode)
-        this.$swiper.insertBefore(lastNode, this.$swiper.childNodes[0])
+        this.$swiper.appendChild(firstNode);
+        this.$swiper.insertBefore(lastNode, this.$swiper.childNodes[0]);
 
-        this.firstIndex++
-        this.lastIndex++
-        this.index++
+        this.firstIndex++;
+        this.lastIndex++;
+        this.index++;
 
-        this.rItemCount += 2
+        this.rItemCount += 2;
       }
     },
 
     $_translate(element, offset, animate = true) {
       if (!element) {
-        warn('[gt-swiper] no element for translate')
-        return
+        warn("[gt-swiper] no element for translate");
+        return;
       }
-      const x = this.isVertical ? 0 : -offset
-      const y = this.isVertical ? -offset : 0
-      this.scroller.scrollTo(x, y, animate)
+      const x = this.isVertical ? 0 : -offset;
+      const y = this.isVertical ? -offset : 0;
+      this.scroller.scrollTo(x, y, animate);
     },
 
     $_opacity(animate = true, opacity) {
-      if (typeof opacity !== 'undefined') {
-        let toIndex = 0
-        let fromIndex = this.toIndex
-        const itemCount = this.rItemCount
+      if (typeof opacity !== "undefined") {
+        let toIndex = 0;
+        let fromIndex = this.toIndex;
+        const itemCount = this.rItemCount;
 
         if (opacity > 0) {
           if (fromIndex > 0) {
-            toIndex = fromIndex - 1
+            toIndex = fromIndex - 1;
           } else if (fromIndex === 0) {
-            toIndex = itemCount - 1
+            toIndex = itemCount - 1;
           }
         } else {
           if (fromIndex < itemCount - 1) {
-            toIndex = fromIndex + 1
+            toIndex = fromIndex + 1;
           } else if (fromIndex === itemCount - 1) {
-            toIndex = 0
+            toIndex = 0;
           }
         }
-        const from = this.$children[fromIndex].$el
-        const to = this.$children[toIndex].$el
-        from.style.opacity = 1 - Math.abs(opacity)
-        from.style.transition = animate ? 'opacity 300ms ease' : ''
-        to.style.opacity = Math.abs(opacity)
-        return
+        const from = this.$children[fromIndex].$el;
+        const to = this.$children[toIndex].$el;
+        from.style.opacity = 1 - Math.abs(opacity);
+        from.style.transition = animate ? "opacity 300ms ease" : "";
+        to.style.opacity = Math.abs(opacity);
+        return;
       }
 
-      const from = this.$children[this.fromIndex].$el
-      const to = this.$children[this.toIndex].$el
-      from.style.opacity = 0
-      from.style.transition = animate ? 'opacity 500ms ease' : ''
-      to.style.opacity = 1
+      const from = this.$children[this.fromIndex].$el;
+      const to = this.$children[this.toIndex].$el;
+      from.style.opacity = 0;
+      from.style.transition = animate ? "opacity 500ms ease" : "";
+      to.style.opacity = 1;
       if (animate) {
         setTimeout(() => {
-          this.$emit('after-change', this.fromIndex, this.toIndex)
-        }, 500)
+          this.$emit("after-change", this.fromIndex, this.toIndex);
+        }, 500);
       }
     },
 
     $_initState(children) {
-      this.oItemCount = children.length
-      this.rItemCount = children.length
-      this.noDrag = children.length === 1 || !this.dragable
-      this.index = this.defaultIndex >= 0 && this.defaultIndex < children.length ? parseInt(this.defaultIndex) : 0
-      this.firstIndex = 0
-      this.lastIndex = children.length - 1
-      this.fromIndex = this.index === this.firstIndex ? this.lastIndex : this.index + 1
-      this.toIndex = this.index
+      this.oItemCount = children.length;
+      this.rItemCount = children.length;
+      this.noDrag = children.length === 1 || !this.dragable;
+      this.index =
+        this.defaultIndex >= 0 && this.defaultIndex < children.length
+          ? parseInt(this.defaultIndex)
+          : 0;
+      this.firstIndex = 0;
+      this.lastIndex = children.length - 1;
+      this.fromIndex =
+        this.index === this.firstIndex ? this.lastIndex : this.index + 1;
+      this.toIndex = this.index;
     },
 
     $_reInitItems() {
-      const children = this.$children
+      const children = this.$children;
 
       if (!children || !children.length) {
-        return
+        return;
       }
 
-      this.$_getDimension()
+      this.$_getDimension();
 
-      this.$_initState(children)
+      this.$_initState(children);
 
       if (this.isSlide) {
-        this.$_backupItem(children)
-        this.$_initScroller()
-        this.$_translate(this.$swiper, -this.dimension * this.index, false)
+        this.$_backupItem(children);
+        this.$_initScroller();
+        this.$_translate(this.$swiper, -this.dimension * this.index, false);
       } else {
-        this.$_opacity(false)
+        this.$_opacity(false);
       }
-      this.isInitial = true
+      this.isInitial = true;
     },
 
     $_startPlay() {
       if (this.autoplay > 0 && this.oItemCount > 1 && this.isLoop) {
-        this.$_clearTimer()
+        this.$_clearTimer();
         this.timer = setInterval(() => {
           if (!this.isLoop && this.index >= this.rItemCount - 1) {
-            return this.$_clearTimer()
+            return this.$_clearTimer();
           }
           if (!this.dragging) {
-            this.next()
+            this.next();
           }
-        }, this.autoplay)
+        }, this.autoplay);
       }
     },
 
     $_clearTimer() {
       if (this.timer) {
-        clearInterval(this.timer)
-        this.timer = null
+        clearInterval(this.timer);
+        this.timer = null;
       }
     },
 
     $_isScroll(distanceX, distanceY) {
-      const vertical = this.isVertical
-      if (!vertical && (distanceX < 5 || (distanceX >= 5 && distanceY >= 1.73 * distanceX))) {
-        return true
-      } else if (vertical && (distanceY < 5 || (distanceY >= 5 && distanceX >= 1.73 * distanceY))) {
-        return true
+      const vertical = this.isVertical;
+      if (
+        !vertical &&
+        (distanceX < 5 || (distanceX >= 5 && distanceY >= 1.73 * distanceX))
+      ) {
+        return true;
+      } else if (
+        vertical &&
+        (distanceY < 5 || (distanceY >= 5 && distanceX >= 1.73 * distanceY))
+      ) {
+        return true;
       } else {
-        return false
+        return false;
       }
     },
 
     // real index => display index
     $_calcDisplayIndex(index) {
       if (this.isLoop && this.isSlide && this.oItemCount > 0) {
-        return index - 1 < 0 ? this.oItemCount - 1 : index - 1 > this.oItemCount - 1 ? 0 : index - 1
+        return index - 1 < 0
+          ? this.oItemCount - 1
+          : index - 1 > this.oItemCount - 1
+          ? 0
+          : index - 1;
       }
-      return index
+      return index;
     },
     // display index => real index
     $_calcuRealIndex(index) {
       if (index < 0) {
-        index = 0
+        index = 0;
       } else if (this.oItemCount > 0 && index > this.oItemCount - 1) {
-        index = this.oItemCount - 1
+        index = this.oItemCount - 1;
       }
 
       if (this.isLoop && this.isSlide) {
-        return index + 1
+        return index + 1;
       }
-      return index
+      return index;
     },
 
     $_doTransition(towards, options) {
       if (this.oItemCount === 0) {
-        return
+        return;
       }
       if (!options && this.oItemCount < 2) {
-        return
+        return;
       }
 
-      const index = this.index
-      const itemCount = this.rItemCount
-      const oldIndex = this.index
+      const index = this.index;
+      const itemCount = this.rItemCount;
+      const oldIndex = this.index;
 
       if (!towards) {
-        return
+        return;
       }
       if (options && options.index !== undefined) {
-        this.index = options.index
-      } else if (towards === 'prev') {
+        this.index = options.index;
+      } else if (towards === "prev") {
         if (index > 0) {
-          this.index = index - 1
+          this.index = index - 1;
         } else if (!this.isSlide && index === 0) {
-          this.index = itemCount - 1
+          this.index = itemCount - 1;
         } else if (this.isLoop && index === 0) {
-          this.index = itemCount - 1
+          this.index = itemCount - 1;
         }
-      } else if (towards === 'next') {
+      } else if (towards === "next") {
         if (index < itemCount - 1) {
-          this.index = index + 1
+          this.index = index + 1;
         } else if (!this.isSlide && index === itemCount - 1) {
-          this.index = 0
+          this.index = 0;
         } else if (this.isLoop && index === itemCount - 1) {
-          this.index = 1
+          this.index = 1;
         }
       }
 
       if (this.isLoop && this.isSlide) {
-        this.fromIndex = this.$_calcDisplayIndex(oldIndex)
-        this.toIndex = this.$_calcDisplayIndex(this.index)
+        this.fromIndex = this.$_calcDisplayIndex(oldIndex);
+        this.toIndex = this.$_calcDisplayIndex(this.index);
       } else {
-        this.fromIndex = this.toIndex
-        this.toIndex = this.index
+        this.fromIndex = this.toIndex;
+        this.toIndex = this.index;
       }
-      this.$emit('before-change', this.fromIndex, this.toIndex)
+      this.$emit("before-change", this.fromIndex, this.toIndex);
       if (!this.isSlide) {
-        this.$_opacity()
-        return
+        this.$_opacity();
+        return;
       }
 
       setTimeout(() => {
-        const isFirstItem = this.isFirstItem && this.isLoop
-        const isLastItem = this.isLastItem && this.isLoop
+        const isFirstItem = this.isFirstItem && this.isLoop;
+        const isLastItem = this.isLastItem && this.isLoop;
 
         this.transitionEndHandler = () => {
           // Recover first and last page
           if (isLastItem) {
-            const x = this.isVertical ? 0 : this.firstIndex * this.dimension
-            const y = this.isVertical ? this.firstIndex * this.dimension : 0
-            this.scroller.scrollTo(x, y, false)
+            const x = this.isVertical ? 0 : this.firstIndex * this.dimension;
+            const y = this.isVertical ? this.firstIndex * this.dimension : 0;
+            this.scroller.scrollTo(x, y, false);
           }
           if (isFirstItem) {
-            const x = this.isVertical ? 0 : this.lastIndex * this.dimension
-            const y = this.isVertical ? this.lastIndex * this.dimension : 0
-            this.scroller.scrollTo(x, y, false)
+            const x = this.isVertical ? 0 : this.lastIndex * this.dimension;
+            const y = this.isVertical ? this.lastIndex * this.dimension : 0;
+            this.scroller.scrollTo(x, y, false);
           }
 
-          this.$emit('after-change', this.fromIndex, this.toIndex)
-          this.transitionEndHandler = null
-        }
-        this.$_translate(this.$swiper, -this.dimension * this.index)
+          this.$emit("after-change", this.fromIndex, this.toIndex);
+          this.transitionEndHandler = null;
+        };
+        this.$_translate(this.$swiper, -this.dimension * this.index);
 
         // Recover first and last indicator
         if (isFirstItem) {
-          this.index = this.lastIndex
+          this.index = this.lastIndex;
         } else if (isLastItem) {
-          this.index = this.firstIndex
+          this.index = this.firstIndex;
         }
-      }, 10)
+      }, 10);
     },
 
     $_doOnTouchStart(event) {
       if (this.noDrag) {
-        return
+        return;
       }
-      this.stop()
+      this.stop();
 
-      const element = this.$el
+      const element = this.$el;
 
-      let dragState = this.dragState
+      let dragState = this.dragState;
 
-      const point = event.changedTouches ? event.changedTouches[0] : event
+      const point = event.changedTouches ? event.changedTouches[0] : event;
 
-      dragState.startTime = new Date()
-      dragState.startLeft = point.pageX
-      dragState.startTop = point.pageY
-      dragState.itemWidth = element.offsetWidth
-      dragState.itemHeight = element.offsetHeight
+      dragState.startTime = new Date();
+      dragState.startLeft = point.pageX;
+      dragState.startTop = point.pageY;
+      dragState.itemWidth = element.offsetWidth;
+      dragState.itemHeight = element.offsetHeight;
     },
 
     $_doOnTouchMove(event) {
       if (this.noDrag) {
-        return
+        return;
       }
 
-      let dragState = this.dragState
+      let dragState = this.dragState;
 
-      const point = event.changedTouches ? event.changedTouches[0] : event
+      const point = event.changedTouches ? event.changedTouches[0] : event;
 
-      dragState.currentLeft = point.pageX
-      dragState.currentTop = point.pageY
+      dragState.currentLeft = point.pageX;
+      dragState.currentTop = point.pageY;
 
-      let offsetLeft = dragState.currentLeft - dragState.startLeft
-      let offsetTop = dragState.currentTop - dragState.startTop
-      const distanceX = Math.abs(offsetLeft)
-      const distanceY = Math.abs(offsetTop)
+      let offsetLeft = dragState.currentLeft - dragState.startLeft;
+      let offsetTop = dragState.currentTop - dragState.startTop;
+      const distanceX = Math.abs(offsetLeft);
+      const distanceY = Math.abs(offsetTop);
 
-      this.userScrolling = this.$_isScroll(distanceX, distanceY)
+      this.userScrolling = this.$_isScroll(distanceX, distanceY);
       if (this.userScrolling) {
-        return
+        return;
       } else {
-        event.preventDefault()
+        event.preventDefault();
       }
 
-      let _offsetLeft = Math.min(Math.max(-dragState.itemWidth + 1, offsetLeft), dragState.itemWidth - 1)
-      let _offsetTop = Math.min(Math.max(-dragState.itemHeight + 1, offsetTop), dragState.itemHeight - 1)
+      let _offsetLeft = Math.min(
+        Math.max(-dragState.itemWidth + 1, offsetLeft),
+        dragState.itemWidth - 1
+      );
+      let _offsetTop = Math.min(
+        Math.max(-dragState.itemHeight + 1, offsetTop),
+        dragState.itemHeight - 1
+      );
 
       const offset = this.isVertical
         ? _offsetTop - dragState.itemHeight * this.index
-        : _offsetLeft - dragState.itemWidth * this.index
+        : _offsetLeft - dragState.itemWidth * this.index;
 
       if (this.isSlide) {
-        this.$_translate(this.$swiper, offset)
+        this.$_translate(this.$swiper, offset);
       } else {
-        this.$_opacity(false, offsetLeft / dragState.itemWidth)
+        this.$_opacity(false, offsetLeft / dragState.itemWidth);
       }
     },
 
     $_doOnTouchEnd() {
       if (this.noDrag) {
-        return
+        return;
       }
-      let dragState = this.dragState
-      let towards = null
+      let dragState = this.dragState;
+      let towards = null;
       // let offset
 
-      const dragDuration = new Date() - dragState.startTime
-      const offsetLeft = dragState.currentLeft - dragState.startLeft
-      const offsetTop = dragState.currentTop - dragState.startTop
-      const itemWidth = dragState.itemWidth
-      const itemHeight = dragState.itemHeight
-      const index = this.index
-      const itemCount = this.rItemCount
-      const isFastDrag = dragDuration < PAGING_DURATION
+      const dragDuration = new Date() - dragState.startTime;
+      const offsetLeft = dragState.currentLeft - dragState.startLeft;
+      const offsetTop = dragState.currentTop - dragState.startTop;
+      const itemWidth = dragState.itemWidth;
+      const itemHeight = dragState.itemHeight;
+      const index = this.index;
+      const itemCount = this.rItemCount;
+      const isFastDrag = dragDuration < PAGING_DURATION;
 
       if (isFastDrag && dragState.currentLeft === undefined) {
-        this.play(this.autoplay)
-        return
+        this.play(this.autoplay);
+        return;
       }
 
       if (this.isVertical) {
         if (Math.abs(offsetTop) > itemHeight * PAGING_SCALE || isFastDrag) {
-          towards = offsetTop < 0 ? 'next' : 'prev'
+          towards = offsetTop < 0 ? "next" : "prev";
         } else {
-          this.$_translate(this.$swiper, -this.dimension * index, true)
+          this.$_translate(this.$swiper, -this.dimension * index, true);
         }
       } else {
         if (Math.abs(offsetLeft) > itemWidth * PAGING_SCALE || isFastDrag) {
-          towards = offsetLeft < 0 ? 'next' : 'prev'
+          towards = offsetLeft < 0 ? "next" : "prev";
         } else {
           if (this.isSlide) {
-            this.$_translate(this.$swiper, -this.dimension * index, true)
+            this.$_translate(this.$swiper, -this.dimension * index, true);
           } else {
-            this.$_opacity(true, 0)
+            this.$_opacity(true, 0);
           }
         }
       }
 
       if (!this.isLoop) {
-        if ((index === 0 && towards === 'prev') || (index === itemCount - 1 && towards === 'next')) {
-          towards = null
+        if (
+          (index === 0 && towards === "prev") ||
+          (index === itemCount - 1 && towards === "next")
+        ) {
+          towards = null;
         }
       }
 
-      this.$_doTransition(towards)
+      this.$_doTransition(towards);
 
-      this.dragState = {}
+      this.dragState = {};
 
-      this.play(this.autoplay)
+      this.play(this.autoplay);
     },
 
     // MARK: events handler, 如 $_onButtonClick
 
     // MARK: public methods
     next() {
-      this.$_doTransition('next')
+      this.$_doTransition("next");
     },
 
     prev() {
-      this.$_doTransition('prev')
+      this.$_doTransition("prev");
     },
 
     goto(displayIndex) {
       if (isNaN(displayIndex)) {
-        return
+        return;
       }
-      displayIndex = parseInt(displayIndex)
+      displayIndex = parseInt(displayIndex);
 
-      const realIndex = this.$_calcuRealIndex(displayIndex)
-      const towards = realIndex > this.index ? 'next' : 'pre'
+      const realIndex = this.$_calcuRealIndex(displayIndex);
+      const towards = realIndex > this.index ? "next" : "pre";
 
       this.$_doTransition(towards, {
-        index: realIndex,
-      })
+        index: realIndex
+      });
 
       // restart timer
-      this.play(this.autoplay)
+      this.play(this.autoplay);
     },
 
     getIndex() {
-      return this.$_calcDisplayIndex(this.index)
+      return this.$_calcDisplayIndex(this.index);
     },
 
     play(autoplay = 3000) {
-      this.$_clearTimer()
+      this.$_clearTimer();
       if (autoplay < 500) {
-        return
+        return;
       }
-      this.autoplay = autoplay || this.autoplay
-      this.$_startPlay()
-      this.isStoped = false
+      this.autoplay = autoplay || this.autoplay;
+      this.$_startPlay();
+      this.isStoped = false;
     },
 
     stop() {
-      this.$_clearTimer()
-      this.isStoped = true
+      this.$_clearTimer();
+      this.isStoped = true;
     },
 
     swiperItemCreated() {
       if (!this.ready) {
-        return
+        return;
       }
       this.$nextTick(() => {
-        this.$_clearTimer()
-        this.$_reInitItems()
+        this.$_clearTimer();
+        this.$_reInitItems();
         if (this.autoplay > 0 && !this.isStoped) {
-          this.$_startPlay()
+          this.$_startPlay();
         }
-      })
+      });
     },
 
-    swiperItegtestroyed: debounce(function () {
+    swiperItegtestroyed: debounce(function() {
       if (!this.ready) {
-        return
+        return;
       }
       this.$nextTick(() => {
-        this.$_clearTimer()
-        this.$_reInitItems()
+        this.$_clearTimer();
+        this.$_reInitItems();
         if (this.autoplay > 0 && !this.isStoped) {
-          this.$_startPlay()
+          this.$_startPlay();
         }
-      })
-    }, 50),
-  },
-}
-
+      });
+    }, 50)
+  }
+};
 </script>
 
 <style lang="stylus">

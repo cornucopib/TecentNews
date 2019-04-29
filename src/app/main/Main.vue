@@ -49,6 +49,6 @@ export default {
 <style scoped>
 .app_container {
   height: 100%;
-  padding-bottom: 48px;
+  margin-bottom: 48px;
 }
 </style>

@@ -1,92 +1,84 @@
 <template>
   <div class="gt-scroll-view-refresh">
-    <!-- <gt-activity-indicator-rolling
+    <gt-activity-indicator-rolling
       :process="!isRefreshing ? process : undefined"
       :width="10"
       :color="rollerColor"
     ></gt-activity-indicator-rolling>
-    <p class="refresh-tip">{{ refreshTip }}</p> -->
-    <esales-pull-refresh-animation
-      :isRefreshing="isRefreshing"
-      :isRefreshActive="isRefreshActive"
-      :hasRefreshTime="true"
-    >
-    </esales-pull-refresh-animation>
+    <p class="refresh-tip">{{ refreshTip }}</p>
   </div>
 </template>
 
 <script>
-// import Roller from '../activity-indicator/roller'
-import PullRreshAnimation from 'components/activity-indicator/loading_down'
-
+import Roller from "../activity-indicator/roller";
 
 export default {
-  name: 'gt-scroll-view-refresh',
+  name: "gt-scroll-view-refresh",
 
   components: {
-    [PullRreshAnimation.name]: PullRreshAnimation,
+    [Roller.name]: Roller
   },
 
   props: {
     scrollTop: {
       type: Number,
-      default: 0,
+      default: 0
     },
     isRefreshing: {
       type: Boolean,
-      default: false,
+      default: false
     },
     isRefreshActive: {
       type: Boolean,
-      default: false,
+      default: false
     },
     refreshText: {
       type: String,
-      default: '下拉刷新',
+      default: "下拉刷新"
     },
     refreshActiveText: {
       type: String,
-      default: '释放刷新',
+      default: "释放刷新"
     },
     refreshingText: {
       type: String,
-      default: '刷新中...',
+      default: "刷新中..."
     },
     rollerColor: {
       type: String,
-      default: '#2F86F6',
-    },
+      default: "#2F86F6"
+    }
   },
 
   computed: {
     process() {
       /* istanbul ignore if */
       if (!this.$el || !this.scrollTop) {
-        return +this.scrollTop
+        return +this.scrollTop;
       }
 
-      const refreshHeight = this.$el.clientHeight
+      const refreshHeight = this.$el.clientHeight;
 
       if (Math.abs(this.scrollTop) < refreshHeight / 2) {
-        return 0
+        return 0;
       }
       // first 1/3 is not included in progress
-      return (Math.abs(this.scrollTop) - refreshHeight / 2) / (refreshHeight / 2)
+      return (
+        (Math.abs(this.scrollTop) - refreshHeight / 2) / (refreshHeight / 2)
+      );
     },
     refreshTip() {
       if (this.isRefreshing) {
-        return this.refreshingText
+        return this.refreshingText;
       } else if (this.isRefreshActive) {
-        return this.refreshActiveText
+        return this.refreshActiveText;
       } else {
-        return this.refreshText
+        return this.refreshText;
       }
     }
   },
-  mounted() {
-  }
-}
-
+  mounted() {}
+};
 </script>
 
 <style lang="stylus">

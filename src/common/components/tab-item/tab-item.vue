@@ -8,14 +8,8 @@
   >
     <!-- slot中不能使用v-show -->
     <div class="gt-tab-item-icon">
-      <slot
-        name="icon"
-        v-if="!isSelected"
-      ></slot>
-      <slot
-        name="icon-hightlight"
-        v-if="isSelected"
-      ></slot>
+      <slot name="icon" v-if="!isSelected"></slot>
+      <slot name="icon-hightlight" v-if="isSelected"></slot>
     </div>
     <div class="gt-tab-item-label">
       <slot></slot>
@@ -25,22 +19,14 @@
 
 <script>
 export default {
-  name: 'gt-tab-item',
-  props: ['id', 'link'],
+  name: "gt-tab-item",
+  props: ["id", "link"],
   computed: {
-    isSelected: function () {
-      return this.$parent.value === this.id
-    }
-  },
-  watch: {
-    id: function (newval, oldval) {
-      console.log(newval)
-      if (newval === this.$parent.value) {
-        this.$router.push(this.link)
-      }
+    isSelected: function() {
+      return this.$parent.value === this.id;
     }
   }
-}
+};
 </script>
 
 
@@ -56,6 +42,7 @@ export default {
   flex: 1;
   text-decoration: none;
   color: #666666;
+  user-select: none;
 }
 
 .gt-tab-item-icon {
