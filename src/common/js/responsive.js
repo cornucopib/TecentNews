@@ -1,23 +1,18 @@
-/*
- * @Author: liuwei
- * @Description: Do not edit
- * @Date: 2019-04-21
- */
-;(function(window, document) {
+(function(window, document) {
   function resize() {
-    var ww = window.innerWidth
+    var ww = window.innerWidth;
     if (ww > window.screen.width) {
-      window.requestAnimationFrame(resize)
+      window.requestAnimationFrame(resize);
     } else {
-      console.log('ww', ww)
+      console.log("ww", ww);
       if (ww > 750) {
-        ww = 750
+        ww = 750;
       }
-      document.documentElement.style.fontSize = (ww * 17) / 375 + 'px'
+      document.documentElement.style.fontSize = (ww * 17) / 375 + "px";
     }
   }
 
-  resize()
+  resize();
 
-  window.addEventListener('resize', resize)
-})(window, document)
+  window.addEventListener("resize", resize);
+})(window, document);

@@ -15,7 +15,10 @@
       </div>
     </header>
     <nav>
-      <gt-tab-bar v-model="current" :items="items" :maxLength="5" @change="onTabChange"/>
+      <div class="gt-tab-bar-container">
+        <gt-tab-bar v-model="current" :items="items" :maxLength="5" @change="onTabChange"/>
+      </div>
+      <router-link to="/news-tab-manage" tag="div" class="add-item">+</router-link>
     </nav>
 
     <gt-swiper
@@ -110,7 +113,8 @@ export default {
     },
     onTabChange(item, index) {
       this.$refs.swiper.goto(index);
-    }
+    },
+    goToAdd() {}
   }
 };
 </script>
@@ -128,6 +132,21 @@ header {
   display: flex;
   height: 40px;
   margin: 1px auto;
+}
+
+nav {
+  display: flex;
+}
+
+nav .gt-tab-bar-container {
+  width: calc(100% - 20px);
+}
+
+nav .add-item {
+  width: 20px;
+  height: 100%;
+  text-align: center;
+  line-height: 40px;
 }
 
 .news-header-left-button {

@@ -737,6 +737,8 @@ export default {
 </script>
 
 <style lang="stylus">
+@import '~style/mixin/theme.components.styl';
+
 .gt-swiper-box {
   overflow: hidden;
   will-change: tranform;

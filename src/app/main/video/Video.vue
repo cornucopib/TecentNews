@@ -1,73 +1,143 @@
+<!--
+ * @Description: Do not edit
+ * @Author: liuwei
+ * @Date: 2019-04-13
+ -->
 <template>
   <div class="mydiv">
-    <div class="mydiv1" v-for="item in items" :key="item">{{item}}</div>
+    <div class="mydiv0">
+      <draggable v-model="myArray" @update="update" group="people">
+        <transition-group type="transition" name="flip-list">
+          <div
+            v-for="(element,index) in myArray"
+            :key="element.id"
+            class="mydiv1"
+            @click="removeAt(index)"
+          >{{element.name}}</div>
+        </transition-group>
+      </draggable>
+    </div>
+
+    <div>haha</div>
+
+    <div class="mydiv2">
+      <draggable v-model="myArray1" group="people">
+        <transition-group type="transition" name="flip-list">
+          <div v-for="element in myArray1" :key="element.id" class="mydiv3">{{element.name}}</div>
+        </transition-group>
+      </draggable>
+    </div>
   </div>
 </template>
 
 <script>
+import draggable from "components/draggable/vuedraggable";
 export default {
   data() {
     return {
-      items: [
-        "哈哈1",
-        "哈哈2",
-        "哈哈3",
-        "哈哈4",
-        "哈哈5",
-        "哈哈6",
-        "哈哈7",
-        "哈哈8",
-        "哈哈9",
-        "哈哈10",
-        "哈哈11",
-        "哈哈12",
-        "哈哈13",
-        "哈哈14",
-        "哈哈15",
-        "哈哈16",
-        "哈哈17",
-        "哈哈18",
-        "哈哈19",
-        "哈哈20",
-        "哈哈21",
-        "哈哈22",
-        "哈哈23",
-        "哈哈24",
-        "哈哈25",
-        "哈哈26",
-        "哈哈27",
-        "哈哈28",
-        "哈哈29",
-        "哈哈30",
-        "哈哈31",
-        "哈哈32",
-        "哈哈33",
-        "哈哈34",
-        "哈哈35",
-        "哈哈36",
-        "哈哈37",
-        "哈哈38",
-        "xx39"
+      items: ["哈哈1"],
+      myArray: [
+        {
+          name: "1",
+          id: 1
+        },
+        {
+          name: "2",
+          id: 2
+        },
+        {
+          name: "3",
+          id: 3
+        },
+        {
+          name: "4",
+          id: 4
+        },
+        {
+          name: "5",
+          id: 5
+        },
+        {
+          name: "6",
+          id: 6
+        },
+        {
+          name: "7",
+          id: 7
+        },
+        {
+          name: "8",
+          id: 8
+        },
+        {
+          name: "9",
+          id: 9
+        }
+      ],
+      myArray1: [
+        {
+          name: "10",
+          id: 10
+        },
+        {
+          name: "11",
+          id: 11
+        }
       ]
     };
   },
-
-  mounted() {
-    this.a();
+  components: {
+    draggable
   },
+
+  mounted() {},
   methods: {
-    a() {
-      let mydiv1 = this.$el.querySelector(".mydiv1");
-      console.log("mydiv.clientheight", mydiv1.clientHeight);
+    update(val) {
+      console.log("update", this.myArray);
+    },
+    removeAt(index) {
+      this.myArray.splice(index, 1);
     }
   }
 };
 </script>
 
 <style scoped>
-.mydiv {
-  height: 100%;
+.mydiv0 > div {
+  box-sizing: border-box;
   width: 100%;
-  overflow: hidden;
+  min-height: 100px;
+}
+
+.mydiv1 {
+  width: 25%;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  display: inline-block;
+  outline: 1px solid red;
+}
+
+.mydiv2 > div {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.mydiv3 {
+  width: 25%;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  display: inline-block;
+  outline: 1px solid red;
+}
+
+.flip-list-move {
+  transition: transform 0.5s;
+}
+
+.no-move {
+  transition: transform 0s;
 }
 </style>

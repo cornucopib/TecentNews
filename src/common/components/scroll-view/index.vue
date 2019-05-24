@@ -1,3 +1,8 @@
+<!--
+ * @Description: Do not edit
+ * @Author: liuwei
+ * @Date: 2019-04-21
+ -->
 <template>
   <div
     class="gt-scroll-view"
@@ -10,10 +15,7 @@
     @mouseup="$_onScollerMouseUp"
     @mouseleave="$_onScollerMouseUp"
   >
-    <div
-      class="scroll-view-header"
-      v-if="$slots.header"
-    >
+    <div class="scroll-view-header" v-if="$slots.header">
       <slot name="header"></slot>
     </div>
     <div
@@ -43,61 +45,55 @@
         :class="{active: isEndReachingStart || isEndReaching}"
         class="scroll-view-more"
       >
-        <slot
-          name="more"
-          :is-end-reaching="isEndReachingStart || isEndReaching"
-        ></slot>
+        <slot name="more" :is-end-reaching="isEndReachingStart || isEndReaching"></slot>
       </div>
     </div>
-    <div
-      class="scroll-view-footer"
-      v-if="$slots.footer"
-    >
+    <div class="scroll-view-footer" v-if="$slots.footer">
       <slot name="footer"></slot>
     </div>
   </div>
 </template>
 
 <script>
-import { debounce } from '../_util'
-import Scroller from '../_util/scroller'
-import { render } from '../_util/render'
+import { debounce } from "../_util";
+import Scroller from "../_util/scroller";
+import { render } from "../_util/render";
 
 export default {
-  name: 'gt-scroll-view',
+  name: "gt-scroll-view",
   props: {
     scrollingX: {
       type: Boolean,
-      default: true,
+      default: true
     },
     scrollingY: {
       type: Boolean,
-      default: true,
+      default: true
     },
     bouncing: {
       type: Boolean,
-      default: true,
+      default: true
     },
     autoReflow: {
       type: Boolean,
-      default: false,
+      default: false
     },
     manualInit: {
       type: Boolean,
-      default: false,
+      default: false
     },
     endReachedThreshold: {
       type: Number,
-      default: 0,
+      default: 0
     },
     immediateCheckEndReaching: {
       type: Boolean,
-      default: false,
+      default: false
     },
     touchAngle: {
       type: Number,
-      default: 45,
-    },
+      default: 45
+    }
   },
   data() {
     return {
@@ -124,45 +120,45 @@ export default {
       contentW: 0,
       contentH: 0,
       reflowTimer: null,
-      endReachedHandler: null,
-    }
+      endReachedHandler: null
+    };
   },
   computed: {
     hasRefresher() {
-      return !!(this.$slots.refresh || this.$scopedSlots.refresh)
+      return !!(this.$slots.refresh || this.$scopedSlots.refresh);
     },
     hasMore() {
-      return !!(this.$slots.more || this.$scopedSlots.more)
-    },
+      return !!(this.$slots.more || this.$scopedSlots.more);
+    }
   },
   mounted() {
     if (!this.manualInit) {
-      this.$_initScroller()
+      this.$_initScroller();
     }
   },
   destroyed() {
-    this.reflowTimer && clearInterval(this.reflowTimer)
+    this.reflowTimer && clearInterval(this.reflowTimer);
   },
   methods: {
     $_initScroller() {
       /* istanbul ignore if */
       if (this.isInitialed) {
-        return
+        return;
       }
-      this.container = this.$el
-      this.refresher = this.$el.querySelector('.scroll-view-refresh')
-      this.more = this.$el.querySelector('.scroll-view-more')
-      this.content = this.$el.querySelector('.scroll-view-container')
-      this.refreshOffsetY = this.refresher ? this.refresher.clientHeight : 0
-      this.moreOffsetY = this.more ? this.more.clientHeight : 0
-      const container = this.container
-      const content = this.content
-      const rect = container.getBoundingClientRect()
+      this.container = this.$el;
+      this.refresher = this.$el.querySelector(".scroll-view-refresh");
+      this.more = this.$el.querySelector(".scroll-view-more");
+      this.content = this.$el.querySelector(".scroll-view-container");
+      this.refreshOffsetY = this.refresher ? this.refresher.clientHeight : 0;
+      this.moreOffsetY = this.more ? this.more.clientHeight : 0;
+      const container = this.container;
+      const content = this.content;
+      const rect = container.getBoundingClientRect();
       const scroller = new Scroller(
         (left, top) => {
-          render(content, left, top)
+          render(content, left, top);
           if (this.isInitialed) {
-            this.$_onScroll(left, top)
+            this.$_onScroll(left, top);
           }
         },
         {
@@ -172,208 +168,229 @@ export default {
           zooming: false,
           animationDuration: 200,
           speedMultiplier: 1.2,
-          inRequestAnimationFrame: true,
-        },
-      )
-      scroller.setPosition(rect.left + container.clientLeft, rect.top + container.clientTop)
+          inRequestAnimationFrame: true
+        }
+      );
+      scroller.setPosition(
+        rect.left + container.clientLeft,
+        rect.top + container.clientTop
+      );
       if (this.hasRefresher) {
         scroller.activatePullToRefresh(
           this.refreshOffsetY,
           () => {
-            this.isRefreshActive = true
-            this.isRefreshing = false
+            this.isRefreshActive = true;
+            this.isRefreshing = false;
           },
           () => {
-            this.isRefreshActive = false
-            this.isRefreshing = false
-            this.$emit('refreshActive')
+            this.isRefreshActive = false;
+            this.isRefreshing = false;
+            this.$emit("refreshActive");
           },
           () => {
-            this.isRefreshActive = false
-            this.isRefreshing = true
-            this.$emit('refreshing')
-          },
-        )
+            this.isRefreshActive = false;
+            this.isRefreshing = true;
+            this.$emit("refreshing");
+          }
+        );
       }
-      this.scroller = scroller
-      this.reflowScroller(true)
-      this.autoReflow && this.$_initAutoReflow()
+      this.scroller = scroller;
+      this.reflowScroller(true);
+      this.autoReflow && this.$_initAutoReflow();
       this.endReachedHandler = debounce(() => {
-        this.isEndReaching = true
-        this.$emit('endReached')
-        this.$emit('end-reached')
-      }, 50)
+        this.isEndReaching = true;
+        this.$emit("endReached");
+        this.$emit("end-reached");
+      }, 50);
 
       setTimeout(() => {
-        this.isInitialed = true
-      }, 50)
+        this.isInitialed = true;
+      }, 50);
 
       if (this.immediateCheckEndReaching) {
-        this.$nextTick(this.$_checkScrollerEnd)
+        this.$nextTick(this.$_checkScrollerEnd);
       }
     },
     $_initAutoReflow() {
       this.reflowTimer = setInterval(() => {
-        this.reflowScroller()
-      }, 100)
+        this.reflowScroller();
+      }, 100);
     },
     $_checkScrollerEnd() {
       if (!this.scroller) {
-        return
+        return;
       }
-      const containerHeight = this.scroller._clientHeight
-      const content = this.scroller._contentHeight
-      const top = this.scroller._scrollTop
-      const moreOffsetY = this.moreOffsetY
-      const moreThreshold = this.endReachedThreshold
-      const endOffset = content - containerHeight - (top + moreOffsetY + moreThreshold)
-      if (top >= 0 && !this.isEndReaching && endOffset <= 0 && this.endReachedHandler) {
+      const containerHeight = this.scroller._clientHeight;
+      const content = this.scroller._contentHeight;
+      const top = this.scroller._scrollTop;
+      const moreOffsetY = this.moreOffsetY;
+      const moreThreshold = this.endReachedThreshold;
+      const endOffset =
+        content - containerHeight - (top + moreOffsetY + moreThreshold);
+      if (
+        top >= 0 &&
+        !this.isEndReaching &&
+        endOffset <= 0 &&
+        this.endReachedHandler
+      ) {
         // First prepare for "load more" state
-        this.isEndReachingStart = true
+        this.isEndReachingStart = true;
         // Second enter "load more" state
         // & trigger endReached event only once after the rebounding animation
-        this.endReachedHandler()
+        this.endReachedHandler();
       }
     },
     $_getScrollerAngle() {
-      const diffX = this.currentX - this.startX
-      const diffY = this.currentY - this.startY
-      const angle = Math.atan2(Math.abs(diffY), Math.abs(diffX)) * 180 / Math.PI
-      return this.scrollingX ? 90 - angle : angle
+      const diffX = this.currentX - this.startX;
+      const diffY = this.currentY - this.startY;
+      const angle =
+        (Math.atan2(Math.abs(diffY), Math.abs(diffX)) * 180) / Math.PI;
+      return this.scrollingX ? 90 - angle : angle;
     },
     // MARK: events handler
     $_onScollerTouchStart(event) {
       // event.target.tagName && event.target.tagName.match(/input|textarea|select/i)
       /* istanbul ignore if */
       if (!this.scroller) {
-        return
+        return;
       }
-      this.startX = event.targetTouches[0].pageX
-      this.startY = event.targetTouches[0].pageY
-      this.scroller.doTouchStart(event.touches, event.timeStamp)
+      this.startX = event.targetTouches[0].pageX;
+      this.startY = event.targetTouches[0].pageY;
+      this.scroller.doTouchStart(event.touches, event.timeStamp);
     },
     $_onScollerTouchMove(event) {
       /* istanbul ignore if */
       if (!this.scroller) {
-        return
+        return;
       }
-      event.preventDefault()
+      event.preventDefault();
 
-      this.currentX = event.targetTouches[0].pageX
-      this.currentY = event.targetTouches[0].pageY
+      this.currentX = event.targetTouches[0].pageX;
+      this.currentY = event.targetTouches[0].pageY;
 
       if (!this.scrollingX || !this.scrollingY) {
-        const currentTouchAngle = this.$_getScrollerAngle()
+        const currentTouchAngle = this.$_getScrollerAngle();
         if (currentTouchAngle < this.touchAngle) {
-          return
+          return;
         }
       }
 
-      this.scroller.doTouchMove(event.touches, event.timeStamp, event.scale)
+      this.scroller.doTouchMove(event.touches, event.timeStamp, event.scale);
 
-      const boundaryDistance = 15
-      const scrollLeft = document.documentElement.scrollLeft || window.pageXOffset || document.body.scrollLeft
-      const scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
+      const boundaryDistance = 15;
+      const scrollLeft =
+        document.documentElement.scrollLeft ||
+        window.pageXOffset ||
+        document.body.scrollLeft;
+      const scrollTop =
+        document.documentElement.scrollTop ||
+        window.pageYOffset ||
+        document.body.scrollTop;
 
-      const pX = this.currentX - scrollLeft
-      const pY = this.currentY - scrollTop
-      if (pX > document.documentElement.clientWidth - boundaryDistance || pY > document.documentElement.clientHeight - boundaryDistance || pX < boundaryDistance || pY < boundaryDistance) {
-        this.scroller.doTouchEnd(event.timeStamp)
+      const pX = this.currentX - scrollLeft;
+      const pY = this.currentY - scrollTop;
+      if (
+        pX > document.documentElement.clientWidth - boundaryDistance ||
+        pY > document.documentElement.clientHeight - boundaryDistance ||
+        pX < boundaryDistance ||
+        pY < boundaryDistance
+      ) {
+        this.scroller.doTouchEnd(event.timeStamp);
       }
     },
     $_onScollerTouchEnd(event) {
       /* istanbul ignore if */
       if (!this.scroller) {
-        return
+        return;
       }
-      this.scroller.doTouchEnd(event.timeStamp)
+      this.scroller.doTouchEnd(event.timeStamp);
     },
     $_onScollerMouseDown(event) {
       /* istanbul ignore if */
       if (!this.scroller) {
-        return
+        return;
       }
-      this.startX = event.pageX
-      this.startY = event.pageY
+      this.startX = event.pageX;
+      this.startY = event.pageY;
       this.scroller.doTouchStart(
         [
           {
             pageX: event.pageX,
-            pageY: event.pageY,
-          },
+            pageY: event.pageY
+          }
         ],
-        event.timeStamp,
-      )
-      this.isMouseDown = true
+        event.timeStamp
+      );
+      this.isMouseDown = true;
     },
     $_onScollerMouseMove(event) {
       /* istanbul ignore if */
       if (!this.scroller || !this.isMouseDown) {
-        return
+        return;
       }
 
-      this.currentX = event.pageX
-      this.currentY = event.pageY
+      this.currentX = event.pageX;
+      this.currentY = event.pageY;
       if (!this.scrollingX || !this.scrollingY) {
-        const currentTouchAngle = this.$_getScrollerAngle()
+        const currentTouchAngle = this.$_getScrollerAngle();
         if (currentTouchAngle < this.touchAngle) {
-          return
+          return;
         }
       }
       this.scroller.doTouchMove(
         [
           {
             pageX: event.pageX,
-            pageY: event.pageY,
-          },
+            pageY: event.pageY
+          }
         ],
-        event.timeStamp,
-      )
-      this.isMouseDown = true
+        event.timeStamp
+      );
+      this.isMouseDown = true;
     },
     $_onScollerMouseUp(event) {
       /* istanbul ignore if */
       if (!this.scroller || !this.isMouseDown) {
-        return
+        return;
       }
-      this.scroller.doTouchEnd(event.timeStamp)
-      this.isMouseDown = false
+      this.scroller.doTouchEnd(event.timeStamp);
+      this.isMouseDown = false;
     },
     $_onScroll(left, top) {
-      left = +left.toFixed(2)
-      top = +top.toFixed(2)
+      left = +left.toFixed(2);
+      top = +top.toFixed(2);
       if (this.scrollX === left && this.scrollY === top) {
-        return
+        return;
       }
-      this.scrollX = left
-      this.scrollY = top
-      this.$_checkScrollerEnd()
-      this.$emit('scroll', { scrollLeft: left, scrollTop: top })
+      this.scrollX = left;
+      this.scrollY = top;
+      this.$_checkScrollerEnd();
+      this.$emit("scroll", { scrollLeft: left, scrollTop: top });
     },
     init() {
       this.$nextTick(() => {
-        this.$_initScroller()
-      })
+        this.$_initScroller();
+      });
     },
     scrollTo(left, top, animate = false) {
       /* istanbul ignore if */
       if (!this.scroller) {
-        return
+        return;
       }
-      this.scroller.scrollTo(left, top, animate)
+      this.scroller.scrollTo(left, top, animate);
     },
     reflowScroller(force = false) {
-      const container = this.container
-      const content = this.content
+      const container = this.container;
+      const content = this.content;
       /* istanbul ignore if */
       if (!this.scroller || !container || !content) {
-        return
+        return;
       }
       this.$nextTick(() => {
-        const containerW = container.clientWidth
-        const containerH = container.clientHeight
-        const contentW = content.offsetWidth
-        const contentH = content.offsetHeight
+        const containerW = container.clientWidth;
+        const containerH = container.clientHeight;
+        const contentW = content.offsetWidth;
+        const contentH = content.offsetHeight;
 
         if (
           force ||
@@ -386,42 +403,41 @@ export default {
             container.clientWidth,
             container.clientHeight,
             content.offsetWidth,
-            content.offsetHeight,
-          )
-          this.containerW = containerW
-          this.containerH = containerH
-          this.contentW = contentW
-          this.contentH = contentH
+            content.offsetHeight
+          );
+          this.containerW = containerW;
+          this.containerH = containerH;
+          this.contentW = contentW;
+          this.contentH = contentH;
         }
-      })
+      });
     },
     triggerRefresh() {
       /* istanbul ignore if */
       if (!this.scroller) {
-        return
+        return;
       }
-      this.scroller.triggerPullToRefresh()
+      this.scroller.triggerPullToRefresh();
     },
     finishRefresh() {
       /* istanbul ignore if */
       if (!this.scroller) {
-        return
+        return;
       }
-      this.scroller.finishPullToRefresh()
-      this.reflowScroller()
+      this.scroller.finishPullToRefresh();
+      this.reflowScroller();
     },
     finishLoadMore() {
       /* istanbul ignore if */
       if (!this.scroller) {
-        return
+        return;
       }
-      this.isEndReachingStart = false
-      this.isEndReaching = false
-      this.reflowScroller()
-    },
-  },
-}
-
+      this.isEndReachingStart = false;
+      this.isEndReaching = false;
+      this.reflowScroller();
+    }
+  }
+};
 </script>
 
 <style lang="stylus">
